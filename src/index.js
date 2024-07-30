@@ -1,24 +1,32 @@
 module.exports = function toReadable(number) {
 
-    const strNum = {
-        toTen: ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'],
-        twenty: ['eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen', 'twenty'],
-        toHundred: ['twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety']
-    }
+    const toTen = ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten']
+    const twenty = ['eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen', 'twenty'] //11-20
+    const toHundred = ['', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety']
+
 
     if (!number) { return `zero` }
 
-    const dgt = number.toString().split('').map(Number).reverse()
+    const upToHng = number % 100
 
-    let numsToTen = strNum.toTen[dgt[0] - 1] ? `${strNum.toTen[dgt[0] - 1]}` : ``
+    const upToHngString =
+        upToHng === 0
+            ? ``
+            : upToHng <= 10
+                ? toTen[upToHng - 1]
+                : upToHng <= 20
+                    ? twenty[upToHng - 10 - 1]
+                    : upToHng % 10 === 0
+                        ? toHundred[upToHng / 10 - 1]
+                        : `${toHundred[Math.floor(upToHng / 10) - 1]} ${toTen[upToHng % 10 - 1]}`
 
-    dgt[1] === 1 ? numsToTen = strNum.twenty[dgt[0] - 1] : numsToTen
 
-    const numsToHundred = strNum.toHundred[dgt[1] - 2] ? `${strNum.toHundred[dgt[1] - 2]} ` : ``
+    const hng = (number - number % 100) / 100
 
-    const hundreds = dgt.length > 2 ? `${strNum.toTen[dgt[2] - 1]} hundred${numsToHundred || numsToTen ? ` ` : ``}` : ``
+    const hngString = hng !== 0 ? `${toTen[hng - 1]} hundred ` : ``
 
-    return `${hundreds}${numsToHundred}${numsToTen}`
+    return `${hngString}${upToHngString}`.trim()
 }
+
 
 
